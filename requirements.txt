@@ -3,3 +3,4 @@ pandas>=1.5
 numpy>=1.23
 scikit-learn>=1.2
 transformers>=4.30
+accelerate>=0.20  # sometimes needed by transformers for training loops

@@ -108,14 +108,43 @@ reproducibility section.
 **Nothing to download for this step** — it only needs the C-MAPSS data
 already in `data/` from step 1.
 
-## 6. What's next
+## 6. Train the fusion model
 
-Once you have `results/train_logs.csv` and `results/test_logs.csv`, the
-remaining steps are:
-1. Build the fusion model (this baseline's LSTM + a BERT text encoder over
-   the synthetic logs).
-2. Train it on the same train/test split as the baseline.
-3. Compare fusion RMSE against your baseline RMSE — that comparison is your
-   core paper result.
+Once `results/train_logs.csv` and `results/test_logs.csv` exist, train the
+fusion model (LSTM sensor encoder + DistilBERT text encoder):
 
-Come back and I'll help you build the fusion model next.
+```bash
+python train_fusion.py --baseline_rmse 13.121
+```
+
+(Replace `13.121` with your own baseline test RMSE from step 4.)
+
+This will:
+- Load the same sensor windows as your baseline, plus the synthetic logs
+- Download `distilbert-base-uncased` on first run (needs internet — use
+  Colab or a machine with a connection; it's cached after that)
+- Train a fusion model that combines both sensor and text signals
+- By default the text encoder (DistilBERT) is **frozen** — only the
+  projection layer and fusion head are trained. This is much faster and a
+  sensible first run; you can set `FREEZE_TEXT_ENCODER = False` at the top
+  of `train_fusion.py` later for full fine-tuning if you have time/compute
+  for an ablation comparison
+- Print a final **Baseline vs. Fusion comparison table** and save it to
+  `results/comparison.csv`
+- Save the trained model to `fusion_model.pt`
+
+**This comparison table is your core paper result.** Whether the fusion
+model improves on the baseline or not, both outcomes are reportable —
+if it doesn't improve, that's still a valid, discussable finding (e.g., the
+synthetic logs may need richer variation, or the fusion method may need
+attention instead of concatenation — good material for your Discussion/
+Limitations section).
+
+## 7. What's next
+
+Once you have your baseline RMSE, fusion RMSE, and comparison table, you're
+ready to write up the Results and Discussion sections of your paper. Come
+back and I can help you:
+- Interpret and write up the results
+- Draft the Discussion/Limitations section
+- Put together the full paper structure for submission

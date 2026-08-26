@@ -80,14 +80,42 @@ LSTM are roughly in the 15–25 range; don't worry if you're not immediately
 competitive with state-of-the-art papers that use heavier architectures —
 your contribution is the fusion comparison, not beating the sensor-only SOTA.
 
-## 5. What's next
+## 5. Generate synthetic maintenance logs
 
-Once this baseline is working and you have your RMSE number, the next steps
-are:
-1. Generate synthetic maintenance-log text tied to the failure patterns in
-   this same data.
-2. Build the fusion model (this baseline's LSTM + a BERT text encoder).
-3. Compare fusion RMSE against this baseline RMSE — that comparison is your
+Once your baseline has run successfully and you have your RMSE (e.g. 13.121),
+generate the synthetic technician-log text that the fusion model will use:
+
+```bash
+python synthetic_logs.py
+```
+
+This will:
+- Reload and re-window the same C-MAPSS data (same windows your baseline used)
+- For each window, compare the start vs. end of the window per sensor to find
+  the biggest shifts, using real C-MAPSS sensor physics (temperature,
+  pressure, speed, flow — see `SENSOR_INFO` in `synthetic_logs.py`)
+- Write a technician-style note whose severity (routine / minor deviation /
+  urgent) scales with how close the engine is to failure (RUL)
+- Save two files:
+  - `results/train_logs.csv` (columns: `RUL`, `log_text`)
+  - `results/test_logs.csv` (same columns)
+
+It prints 3 sample logs at the end so you can sanity-check the output looks
+reasonable before moving on. It's deterministic (fixed random seed), so
+re-running it gives you the same logs every time — important for your
+reproducibility section.
+
+**Nothing to download for this step** — it only needs the C-MAPSS data
+already in `data/` from step 1.
+
+## 6. What's next
+
+Once you have `results/train_logs.csv` and `results/test_logs.csv`, the
+remaining steps are:
+1. Build the fusion model (this baseline's LSTM + a BERT text encoder over
+   the synthetic logs).
+2. Train it on the same train/test split as the baseline.
+3. Compare fusion RMSE against your baseline RMSE — that comparison is your
    core paper result.
 
-Come back and I'll help you build the synthetic log generator next.
+Come back and I'll help you build the fusion model next.

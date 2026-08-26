@@ -36,7 +36,7 @@ LR = 1e-3
 VAL_SPLIT = 0.15
 SEED = 42
 TEXT_MODEL_NAME = "distilbert-base-uncased"
-FREEZE_TEXT_ENCODER = True   # True = fast (recommended first run); False = full fine-tune
+FREEZE_TEXT_ENCODER = False   # True = fast (recommended first run); False = full fine-tune
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
